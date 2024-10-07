@@ -1,16 +1,15 @@
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { prompt, csvData } = req.body;
 
     try {
-      const response = await openai.createChatCompletion({
+      const response = await openai.chat.completions.create({
         model: 'gpt-4',
         messages: [
           { role: 'system', content: 'You are an expert senior sales analyst that answers questions about CSV data.' },
@@ -18,7 +17,7 @@ export default async function handler(req, res) {
         ],
       });
 
-      res.status(200).json({ answer: response.data.choices[0].message.content.trim() });
+      res.status(200).json({ answer: response.choices[0].message.content.trim() });
     } catch (error) {
       res.status(500).json({ error: 'Error getting response from OpenAI' });
     }
